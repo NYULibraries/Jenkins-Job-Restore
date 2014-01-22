@@ -27,6 +27,7 @@ dirs.each do |dir|
         line = ""
       end
       new_xml = new_xml + line
+    end
   end
   File.open(File.join(dir,'config.xml'), 'w') do |f|
     print "Opening #{dir}/config.xml for writing.\n"
