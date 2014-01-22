@@ -21,16 +21,12 @@ dirs.each do |dir|
     print "Opening #{dir}/config.xml for reading.\n"
     while line = f.gets
       old_xml = old_xml + line
-      # if line.include?("Jenkins::Tasks::BuildWrapperProxy")
-      #   line.gsub!(/Jenkins::Tasks::BuildWrapperProxy/,"Jenkins::Plugin::Proxies::BuildWrapper")
-      #   print "Replaced Jenkins::Tasks::BuildWrapperProxy with Jenkins::Plugin::Proxies::BuildWrapper.\n"
-      # end
-      # if line.include?("<impl pluginid=\"rvm\" ruby-class=\"String\">")
-      #   line = "          <rvm__path pluginid=\"rvm\" ruby-class=\"String\">~/.rvm/scripts/rvm</rvm__path>\n"+line
-      #   print "Replaced 'impl' tag with 'rvm__path' tag.\n"
-      # end
-      new_xml = new_xml + line unless line.strip.eql?("<launcher ruby-class=\"Jenkins::Launcher\" pluginid=\"rvm\">") || line.strip.eql?("<native ruby-class=\"Java::Hudson::LocalLauncher\" pluginid=\"rvm\"/>") || line.strip.eql?("</launcher>")
-    end
+      rvm_launcher = false
+      if line.strip.eql?("<launcher ruby-class=\"Jenkins::Launcher\" pluginid=\"rvm\">") || line.strip.eql?("<native ruby-class=\"Java::Hudson::LocalLauncher\" pluginid=\"rvm\"/>") || (line.strip.eql?("</launcher>") && rvm_launcher)
+        rvm_launcher = !rvm_launcher
+        line = ""
+      end
+      new_xml = new_xml + line
   end
   File.open(File.join(dir,'config.xml'), 'w') do |f|
     print "Opening #{dir}/config.xml for writing.\n"
